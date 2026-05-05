@@ -1,0 +1,5 @@
+SELECT *
+FROM tbl_orders
+WHERE user_id = 1592933
+ORDER BY id DESC
+LIMIT 1;

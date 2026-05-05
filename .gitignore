@@ -1,0 +1,32 @@
+# Maven
+/target/
+/build/
+/.mvn/
+/mvnw
+mvnw.cmd
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# OS
+.DS_Store
+*~
+
+# Logs / temp
+*.log
+*.data
+*.save
+*.mo
+*.rdb
+
+# Allure
+/.allure/
+allure-results/
+allure-report/
+
+# Env
+.env
+*.env
+!.env.example

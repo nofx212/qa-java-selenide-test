@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        disableConcurrentBuilds(abortPrevious: true)
+        buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '10'))
+    }
+
+    parameters {
+        booleanParam(name: 'RUN_TESTS', defaultValue: false, description: 'Run UI tests (requires .env via credentials)')
+        booleanParam(name: 'HEADLESS', defaultValue: true, description: 'Run Chrome in headless mode')
+        string(name: 'TEST_GROUP', defaultValue: 'epicvin', description: 'JUnit5 tag to run')
+    }
+
+    tools {
+        jdk 'jdk-21'
+        maven 'maven-3'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh 'mvn -B clean compile test-compile'
+            }
+        }
+
+        stage('Load .env') {
+            when { expression { return params.RUN_TESTS } }
+            steps {
+                withCredentials([file(credentialsId: 'qa-java-selenide-test-env', variable: 'ENV_FILE')]) {
+                    sh 'cp "$ENV_FILE" .env'
+                }
+            }
+        }
+
+        stage('Run tests') {
+            when { expression { return params.RUN_TESTS } }
+            steps {
+                sh "mvn -B test -Dgroups=${params.TEST_GROUP} -Dheadless=${params.HEADLESS}"
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                if (params.RUN_TESTS) {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'target/allure-results']]
+                    ])
+                    archiveArtifacts artifacts: 'target/allure-results/**', allowEmptyArchive: true
+                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                }
+                cleanWs()
+            }
+        }
+    }
+}
