@@ -1,184 +1,184 @@
 # qa-java-selenide-test
 
-[![CI](https://github.com/USERNAME/qa-java-selenide-test/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/qa-java-selenide-test/actions/workflows/ci.yml)
+[![CI](https://github.com/nofx212/qa-java-selenide-test/actions/workflows/ci.yml/badge.svg)](https://github.com/nofx212/qa-java-selenide-test/actions/workflows/ci.yml)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![Selenide](https://img.shields.io/badge/Selenide-7.15.0-green)
 ![JUnit5](https://img.shields.io/badge/JUnit-5-25A162)
 ![Maven](https://img.shields.io/badge/Maven-3.x-C71A36)
 
-Портфолио‑проект автоматизированного UI/SQL тестирования веб‑приложения [EpicVIN](https://epicvin.com/) на стеке **Java + Selenide + JUnit 5 + Allure + MySQL**.
+A portfolio project for automated UI and SQL testing of the [EpicVIN](https://epicvin.com/) web application. Stack: **Java + Selenide + JUnit 5 + Allure + MySQL**.
 
-> Демонстрационный набор тестов из основного приватного проекта. Содержит подобранные сценарии, показывающие архитектуру PageObject, параметризацию JUnit 5, работу с Allure, подключение к БД и интеграцию с CI (GitHub Actions + Jenkins).
+> A curated set of tests from a larger private project. It shows the PageObject architecture, JUnit 5 parameterization, Allure reporting, database access and CI integration (GitHub Actions + Jenkins).
 
 ---
 
-## Содержание
-- [Стек](#стек)
-- [Структура проекта](#структура-проекта)
-- [Запуск локально](#запуск-локально)
+## Table of contents
+- [Stack](#stack)
+- [Project structure](#project-structure)
+- [Local run](#local-run)
 - [CI/CD](#cicd)
-- [Allure отчёт](#allure-отчёт)
-- [Что внутри](#что-внутри)
+- [Allure report](#allure-report)
+- [What is inside](#what-is-inside)
 
-## Стек
+## Stack
 
-| Категория | Технология |
+| Category | Technology |
 |---|---|
-| Язык | Java 21 |
-| Сборка | Maven |
+| Language | Java 21 |
+| Build | Maven |
 | UI Framework | Selenide 7.15.0 |
 | Test Runner | JUnit 5 (Jupiter) |
-| Параметризация | `@ParameterizedTest`, `@ValueSource` |
-| Параллелизм | `junit-platform.properties` (fixed, 4 потока) |
-| Отчёты | Allure 2.30 |
-| БД | MySQL (mysql‑connector‑j) |
-| Драйвер | WebDriverManager |
-| Конфиги | dotenv‑java |
+| Parameterization | `@ParameterizedTest`, `@ValueSource` |
+| Parallelism | `junit-platform.properties` (fixed, 4 threads) |
+| Reports | Allure 2.30 |
+| Database | MySQL (mysql‑connector‑j) |
+| Driver | WebDriverManager |
+| Config | dotenv‑java |
 | HTTP | Apache HttpClient 5 |
-| Утилиты | AssertJ, commons‑lang3, SLF4J |
+| Utilities | AssertJ, commons‑lang3, SLF4J |
 
-## Структура проекта
+## Project structure
 
 ```
 qa-java-selenide-test/
 ├── .github/workflows/        # GitHub Actions: CI + Allure
-├── .jenkins/                 # Демонстрационный Jenkinsfile
+├── .jenkins/                 # Jenkinsfile (demo)
 ├── src/main/java/
-│   ├── annotations/epicvin/  # Кастомные мета‑аннотации тестов (@EpicvinTest и др.)
-│   ├── base/                 # Базовые классы для общих PageObject
-│   ├── clearAccount/         # Утилиты предочистки тестовых аккаунтов
-│   ├── constants/            # Загрузка конфигурации из .env
-│   ├── decorator/            # JUnit 5 расширения (логи, префиксы вывода)
-│   ├── enums/                # Перечисления (типы невалидных email и т.п.)
-│   ├── generators/           # Генераторы тестовых данных
-│   ├── interfaces/           # Контракты flow (Login, Register, Report, …)
-│   ├── MD5hash/              # MD5 утилита для сверки токенов
-│   ├── pages/epicvin/        # PageObject‑модель сайта
+│   ├── annotations/epicvin/  # Custom test meta-annotations (@EpicvinTest etc.)
+│   ├── base/                 # Base classes for shared PageObjects
+│   ├── clearAccount/         # Test account cleanup utilities
+│   ├── constants/            # .env-based configuration
+│   ├── decorator/            # JUnit 5 extensions (logs, output prefixes)
+│   ├── enums/                # Enums (invalid email types, etc.)
+│   ├── generators/           # Test data generators
+│   ├── interfaces/           # Flow contracts (Login, Register, Report, …)
+│   ├── MD5hash/              # MD5 helper for token checks
+│   ├── pages/epicvin/        # PageObject model
 │   │   ├── Account/                  # Dashboard, MyReports, Subscriptions
 │   │   ├── Authentication/           # Login, Register, ResetPassword
-│   │   ├── Decoder/VinDecoder/       # VIN декодер
-│   │   ├── Main/                     # Главная страница
+│   │   ├── Decoder/VinDecoder/       # VIN decoder
+│   │   ├── Main/                     # Home page
 │   │   ├── PaymentProcesses/         # FullReport / Dealer processor pages
-│   │   ├── Precheck/                 # Чекаут перед оплатой
-│   │   ├── Price/                    # Прайсинг
+│   │   ├── Precheck/                 # Pre-payment checkout
+│   │   ├── Price/                    # Pricing
 │   │   ├── Report/                   # Report, ReportInaccuracy, SampleVin
 │   │   └── SocialReviews/            # Google / Trustpilot
-│   ├── payments/             # Обработчики платёжных шлюзов (PayPal, Yuno)
-│   └── sql/                  # Пул соединений MySQL и набор SQL запросов
+│   ├── payments/             # Payment gateway handlers (PayPal, Yuno)
+│   └── sql/                  # MySQL connection pool and SQL request loader
 ├── src/main/resources/
-│   └── sqlEpicvin/           # SQL запросы (loadSqlQuery)
+│   └── sqlEpicvin/           # SQL queries (loadSqlQuery)
 ├── src/test/java/
-│   ├── base/BaseTest.java    # Конфигурация Selenide + Allure listener
-│   └── epicvin/              # Тестовые наборы по разделам сайта
+│   ├── base/BaseTest.java    # Selenide config + Allure listener
+│   └── epicvin/              # Test suites grouped by site section
 └── src/test/resources/
     ├── allure.properties
     └── junit-platform.properties
 ```
 
-## Запуск локально
+## Local run
 
-### 1. Требования
+### 1. Requirements
 - Java **21**
 - Maven **3.8+**
-- Chrome (driver подтягивается автоматически через WebDriverManager)
-- MySQL (только для SQL тестов)
+- Chrome (the driver is downloaded automatically by WebDriverManager)
+- MySQL (only for SQL tests)
 
-### 2. Конфигурация
-Скопируй шаблон и заполни значения под свою тестовую среду:
+### 2. Configuration
+Copy the template and fill in the values for your test environment:
 ```bash
 cp .env.example .env
 ```
 
-`.env.example` сгруппирован по секциям: Base URLs, internal cleanup endpoints, test VINs, test accounts (включая `TEST_EMAIL_BASE` для генерации email), test cards, PayPal, БД, sensitive test data (`TEST_USER_IDS`, `EXCLUDED_AUCTIONS`), basic auth для dev окружения.
+`.env.example` is grouped into sections: Base URLs, internal cleanup endpoints, test VINs, test accounts (including `TEST_EMAIL_BASE` for generated emails), test cards, PayPal, database, sensitive test data (`TEST_USER_IDS`, `EXCLUDED_AUCTIONS`), and basic auth for the dev environment.
 
-### 3. Команды Maven
+### 3. Maven commands
 ```bash
-# Все тесты
+# All tests
 mvn clean test
 
-# Только тесты с тегом epicvin
+# Only tests with the epicvin tag
 mvn test -Dgroups=epicvin
 
-# Конкретный класс
+# A specific class
 mvn test -Dtest=MainPageTest
 
-# Headless режим (для CI)
+# Headless mode (for CI)
 mvn test -Dheadless=true
 ```
 
-### 4. Allure отчёт локально
+### 4. Local Allure report
 ```bash
-mvn allure:serve     # сгенерировать и открыть в браузере
-mvn allure:report    # сгенерировать в target/site/allure-maven-plugin
+mvn allure:serve     # generate and open in the browser
+mvn allure:report    # generate into target/site/allure-maven-plugin
 ```
 
 ## CI/CD
 
 ### GitHub Actions
-Два workflow в `.github/workflows/`:
+Two workflows in `.github/workflows/`:
 
-| Workflow | Триггер | Что делает |
+| Workflow | Trigger | What it does |
 |---|---|---|
-| `ci.yml` | `push: main`, `pull_request: main`, `workflow_dispatch` | На любом событии — `mvn clean compile test-compile`. Запуск тестов c secrets — **только** на `push: main` и `workflow_dispatch` (т.е. не на PR), и только если в репозитории включена переменная `RUN_TESTS=true` |
-| `allure-report.yml` | после успешного `CI` / manual | Запускает тесты, генерирует Allure отчёт, складывает в `gh-pages` |
+| `ci.yml` | `push: main`, `pull_request: main`, `workflow_dispatch` | On every event — `mvn clean compile test-compile`. Tests with secrets run **only** on `push: main` and `workflow_dispatch` (i.e. not on PRs), and only when the repository variable `RUN_TESTS=true` is set |
+| `allure-report.yml` | after a successful `CI` / manual | Runs the tests, builds the Allure report, pushes it to the `gh-pages` branch |
 
-Чтобы тесты реально запускались в CI:
-1. **Settings → Secrets and variables → Actions → Variables** — добавь `RUN_TESTS=true`.
-2. **Settings → Secrets and variables → Actions → Secrets** — заведи нужные secrets из `.env.example` (`BASE_URL_EPICVIN`, `VALID_EMAIL`, `VALID_PASSWORD`, `DATABASE_URL_EPICVIN`, `DATABASE_USER`, `DATABASE_PASSWORD` и т.д.).
+To actually run the tests in CI:
+1. **Settings → Secrets and variables → Actions → Variables** — add `RUN_TESTS=true`.
+2. **Settings → Secrets and variables → Actions → Secrets** — add the secrets listed in `.env.example` (`BASE_URL_EPICVIN`, `VALID_EMAIL`, `VALID_PASSWORD`, `DATABASE_URL_EPICVIN`, `DATABASE_USER`, `DATABASE_PASSWORD`, etc.).
 
-> На PR из любого репозитория тесты с secrets не запускаются — только компиляция. Это защита от утечки secrets через подменённый PR-код.
+> Tests with secrets do not run on pull requests from any repository — only compilation runs. This protects secrets from being leaked through modified PR code.
 
 ### Jenkins
-В `.jenkins/Jenkinsfile` — декларативный pipeline с параметрами:
-- `RUN_TESTS` — фактический запуск тестов
-- `HEADLESS` — режим браузера
-- `TEST_GROUP` — JUnit 5 тег
+`.jenkins/Jenkinsfile` contains a declarative pipeline with parameters:
+- `RUN_TESTS` — whether to actually run the tests
+- `HEADLESS` — browser mode
+- `TEST_GROUP` — JUnit 5 tag
 
-Подразумевает Jenkins‑credential `qa-java-selenide-test-env` (file) с содержимым `.env`.
+It expects a Jenkins credential `qa-java-selenide-test-env` (file type) that contains the contents of `.env`.
 
-## Allure отчёт
+## Allure report
 
-Публичная ссылка на Allure намеренно **не публикуется** — тесты бегут на проде, скриншоты могут засветить тестовые данные и внутренние эндпоинты.
+A public Allure URL is intentionally **not published** — the tests run against production, and screenshots could expose test data and internal endpoints.
 
-Получить отчёт можно так:
-- **Локально**: `mvn allure:serve` после `mvn test`.
-- **Из CI run**: артефакт `allure-results` прикладывается к каждому запуску `ci.yml` (если `RUN_TESTS=true`). Открывается через UI GitHub Actions → Run → Artifacts (доступ только авторизованным).
-- **При личной демонстрации**: генерится локально, шарится экран.
+How to get the report:
+- **Locally**: `mvn allure:serve` after `mvn test`.
+- **From a CI run**: the `allure-results` artifact is attached to every `ci.yml` run (when `RUN_TESTS=true`). Download it from the GitHub Actions UI → Run → Artifacts (visible to authorized users only).
+- **For a live demo**: generated locally and shared via screen sharing.
 
-Из соображений безопасности в `BaseTest.java` отключён `savePageSource` — Allure складывает только скриншоты, без HTML‑дампов страниц.
+For security reasons `savePageSource` is disabled in `BaseTest.java` — Allure stores screenshots only, no full HTML page dumps.
 
-## Что внутри
+## What is inside
 
-### Тесты в `src/test/java/epicvin/`
+### Tests in `src/test/java/epicvin/`
 
-12 тестовых файлов / 51 метод / 65 фактических прогонов JUnit (с учётом параметризации).
+12 test files / 51 methods / 65 actual JUnit runs (counting parameterization).
 
-| Раздел | Класс | Покрытие |
+| Section | Class | Coverage |
 |---|---|---|
-| Smoke / Главная | `Main/MainPageTest` | Хедер, футер, поиск, баннеры, языки |
-| Аутентификация | `Authentication/LoginPageTest` | Вход, валидации, ошибки |
-| Аутентификация | `Authentication/RegistrationPageTest` | Регистрация + 15 типов невалидных email (параметризация) |
-| Аутентификация | `Authentication/ResetPasswordPageTest` | Восстановление пароля |
-| Decoder | `Decoder/VinDecoder/VinDecoderPageTest` | VIN декодер |
-| Precheck | `Precheck/PrecheckPageTest` | Чекаут перед оплатой |
-| Report | `Report/ReportPageTest` | Просмотр отчёта по VIN |
-| Report | `Report/SampleVinPageTest` | Sample‑отчёт |
-| Account | `Account/DashboardPageTest` | Дашборд пользователя |
-| Account | `Account/MyReportsPageTest` | Список отчётов |
-| Account | `Account/SubscriptionsPageTest` | Подписки |
-| SQL | `Sql/SqlEpicvinTest` | Прямые проверки в БД (`getEndAt`, `getNextPaymentDate*`, `getDoubleSub`, `getDoubleTrials`, лимиты репортов и т.д.) |
+| Smoke / Home | `Main/MainPageTest` | Header, footer, search, banners, languages |
+| Authentication | `Authentication/LoginPageTest` | Login, validations, errors |
+| Authentication | `Authentication/RegistrationPageTest` | Sign up + 15 invalid email cases (parameterized) |
+| Authentication | `Authentication/ResetPasswordPageTest` | Password recovery |
+| Decoder | `Decoder/VinDecoder/VinDecoderPageTest` | VIN decoder |
+| Precheck | `Precheck/PrecheckPageTest` | Pre-payment checkout |
+| Report | `Report/ReportPageTest` | VIN report view |
+| Report | `Report/SampleVinPageTest` | Sample report |
+| Account | `Account/DashboardPageTest` | User dashboard |
+| Account | `Account/MyReportsPageTest` | Reports list |
+| Account | `Account/SubscriptionsPageTest` | Subscriptions |
+| SQL | `Sql/SqlEpicvinTest` | Direct DB checks (`getEndAt`, `getNextPaymentDate*`, `getDoubleSub`, `getDoubleTrials`, report limits, etc.) |
 
-### Что демонстрирует код
-- **PageObject** — изолированные классы страниц с приватными локаторами и публичным API.
-- **Custom annotations** — мета‑аннотации `@EpicvinTest`, `@EpicvinPaymentTest`, `@EpicvinSqlTest`, `@EpicvinRegistrationTest` объединяют `@Test`/`@ParameterizedTest`, `@Tag`, `@ExtendWith`, `@Execution`.
-- **Parameterized tests** — `@EpicvinRegistrationTest` запускает один метод с 15 вариантами невалидного email (`@ValueSource`).
-- **JUnit 5 Extensions** — `LogsExtension` перехватывает `System.out`/`err` и добавляет префикс `[testName] [project]` (нужно для параллельного запуска).
-- **Selenide listener** — Allure прикладывает скриншоты на падениях (без HTML page source — отключено для безопасности).
-- **Параллельный запуск** — `junit-platform.properties` (fixed, 4 потока), отдельные тесты помечены `@Execution(SAME_THREAD)` (платёжные).
-- **SQL слой** — пул соединений `ThreadLocal<Map<String, Connection>>`, SQL запросы выносятся в `.sql` ресурсы и подгружаются через `loadSqlQueryEpicvin(...)`.
-- **Подстановка чувствительных данных в SQL** — в SQL файлах используются плейсхолдеры (`${TEST_USER_IDS}`, `${EXCLUDED_AUCTIONS}`), которые загрузчик заменяет на значения из `.env`. Списки тестовых юзеров и аукционов не попадают в публичный репозиторий.
-- **Платёжные шлюзы** — отдельные handler‑классы для PayPal и Yuno (изолируют логику работы с iframe и 3DS).
+### What the code shows
+- **PageObject** — isolated page classes with private locators and a public API.
+- **Custom annotations** — `@EpicvinTest`, `@EpicvinPaymentTest`, `@EpicvinSqlTest`, `@EpicvinRegistrationTest` combine `@Test`/`@ParameterizedTest`, `@Tag`, `@ExtendWith`, `@Execution`.
+- **Parameterized tests** — `@EpicvinRegistrationTest` runs a single method with 15 invalid email variants (`@ValueSource`).
+- **JUnit 5 Extensions** — `LogsExtension` intercepts `System.out`/`err` and adds a `[testName] [project]` prefix (needed for parallel runs).
+- **Selenide listener** — Allure attaches screenshots on failures (no HTML page source — disabled for security).
+- **Parallel execution** — `junit-platform.properties` (fixed, 4 threads); some tests are marked `@Execution(SAME_THREAD)` (payment ones).
+- **SQL layer** — `ThreadLocal<Map<String, Connection>>` connection pool, SQL queries live in `.sql` resources and are loaded through `loadSqlQueryEpicvin(...)`.
+- **Sensitive data substitution in SQL** — SQL files use placeholders (`${TEST_USER_IDS}`, `${EXCLUDED_AUCTIONS}`); the loader replaces them with values from `.env`. Lists of test users and excluded auctions never reach the public repo.
+- **Payment gateways** — separate handler classes for PayPal and Yuno (encapsulating iframe and 3DS flows).
 
 ---
 
-> Реальные тестовые данные и эндпоинты эксклюзивны для приватной среды. После клонирования проект скомпилируется, но тесты не запустятся без своего `.env` — см. `.env.example`. Публичная ссылка на Allure намеренно не публикуется.
+> Real test data and endpoints belong to a private environment. After cloning, the project will compile, but the tests will not run without your own `.env` — see `.env.example`. The public Allure URL is intentionally not published.
