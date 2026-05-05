@@ -41,7 +41,7 @@ A portfolio project for automated UI and SQL testing of the [EpicVIN](https://ep
 
 ```
 qa-java-selenide-test/
-├── .github/workflows/        # GitHub Actions: CI + Allure
+├── .github/workflows/        # GitHub Actions: CI
 ├── .jenkins/                 # Jenkinsfile (demo)
 ├── src/main/java/
 │   ├── annotations/epicvin/  # Custom test meta-annotations (@EpicvinTest etc.)
@@ -115,12 +115,11 @@ mvn allure:report    # generate into target/site/allure-maven-plugin
 ## CI/CD
 
 ### GitHub Actions
-Two workflows in `.github/workflows/`:
+One workflow in `.github/workflows/`:
 
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `ci.yml` | `push: main`, `pull_request: main`, `workflow_dispatch` | On every event — `mvn clean compile test-compile`. Tests with secrets run **only** on `push: main` and `workflow_dispatch` (i.e. not on PRs), and only when the repository variable `RUN_TESTS=true` is set |
-| `allure-report.yml` | after a successful `CI` / manual | Runs the tests, builds the Allure report, pushes it to the `gh-pages` branch |
 
 To actually run the tests in CI:
 1. **Settings → Secrets and variables → Actions → Variables** — add `RUN_TESTS=true`.
