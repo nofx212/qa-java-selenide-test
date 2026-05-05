@@ -8,22 +8,22 @@ import static com.codeborne.selenide.Selenide.*;
 import static interfaces.Precheck.*;
 
 /**
- * Единый класс для обработки всех платежей через Yuno (оплата по карте).
- * Обрабатывает логику с момента заполнения данных карты до завершения оплаты.
+ * Unified handler for all Yuno card payments.
+ * Covers the flow from filling card data to payment completion.
  */
 public class YunoPaymentHandler {
 
     /**
-     * Основной метод для обработки Yuno оплаты после заполнения данных карты.
+     * Main method to process a Yuno payment after filling card data.
      *
-     * @param card        Номер карты
-     * @param date        Дата (MM/YY)
-     * @param cvc         CVC код
-     * @param zip         ZIP код (опционально)
-     * @param requires3Ds Требуется ли обработка 3DS аутентификации
+     * @param card        Card number
+     * @param date        Date (MM/YY)
+     * @param cvc         CVC code
+     * @param zip         ZIP code (optional)
+     * @param requires3Ds Whether 3DS authentication is required
      */
     public static void processYunoPayment(String name, String card, String date, String cvc, String zip, boolean requires3Ds, String code) {
-        System.out.println("Начинаем обработку Yuno оплаты");
+        System.out.println("Starting Yuno payment processing");
         fillCardData(name, card, date, cvc, zip);
         clickSecureCheckoutAndWait();
 
@@ -32,17 +32,17 @@ public class YunoPaymentHandler {
             process3DsAuthentication(code);
         }
 
-        System.out.println("Yuno оплата успешно прошла");
+        System.out.println("Yuno payment completed successfully");
     }
 
     /**
-     * Публичный метод для заполнения данных карты и нажатия Secure Checkout.
-     * Используется в специальных случаях, когда нужна кастомная обработка ошибок или 3DS.
+     * Public method to fill card data and click Secure Checkout.
+     * Used in special cases when custom error or 3DS handling is required.
      *
-     * @param card Номер карты
-     * @param date Дата (MM/YY)
-     * @param cvc  CVC код
-     * @param zip  ZIP код (опционально)
+     * @param card Card number
+     * @param date Date (MM/YY)
+     * @param cvc  CVC code
+     * @param zip  ZIP code (optional)
      */
     public static void fillCardDataAndClickSecureCheckout(String name, String card, String date, String cvc, String zip) {
         fillCardData(name, card, date, cvc, zip);
@@ -50,19 +50,19 @@ public class YunoPaymentHandler {
     }
 
     /**
-     * Заполняет данные карты в iframe Yuno.
-     * Пока используется текущий набор локаторов Ixopay.
+     * Fills card data inside the Yuno iframe.
+     * Currently uses the Ixopay locator set.
      *
-     * @param name Имя владельца карты
-     * @param card Номер карты
-     * @param date Дата (MM/YY)
-     * @param cvc  CVC код
-     * @param zip  ZIP код (опционально)
+     * @param name Cardholder name
+     * @param card Card number
+     * @param date Date (MM/YY)
+     * @param cvc  CVC code
+     * @param zip  ZIP code (optional)
      */
     private static void fillCardData(String name, String card, String date, String cvc, String zip) {
-        System.out.println("Заполняем данные карты");
+        System.out.println("Filling card data");
 
-        System.out.println("Вводим имя владельца карты");
+        System.out.println("Entering cardholder name");
         executeJavaScript(
                 "arguments[0].value = arguments[1];" +
                         "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
@@ -71,49 +71,49 @@ public class YunoPaymentHandler {
         );
 
         switchTo().frame(ixopayYunoIframe);
-        System.out.println("Вводим номер карты");
+        System.out.println("Entering card number");
         inputCard.setValue(card);
         switchTo().defaultContent();
 
         switchTo().frame(yunoDateIframe);
-        System.out.println("Вводим дату карты");
+        System.out.println("Entering card expiration date");
         inputMonthYear.setValue(date);
         switchTo().defaultContent();
 
         switchTo().frame(ixopayYunoCVCIframe);
-        System.out.println("Вводим CVC");
+        System.out.println("Entering CVC");
         inputYunoCVC.setValue(cvc);
         switchTo().defaultContent();
 
         if (inputPostalCode.exists() && inputPostalCode.isDisplayed()) {
-            System.out.println("Вводим ZIP");
+            System.out.println("Entering ZIP");
             inputPostalCode.setValue(zip);
         }
 
-        System.out.println("Данные карты заполнены");
+        System.out.println("Card data has been filled");
     }
 
     /**
-     * Нажимает Secure Checkout и ожидает обработки.
+     * Clicks Secure Checkout and waits for processing.
      */
     private static void clickSecureCheckoutAndWait() {
         sleep(2000);
         SelenideElement checkoutButton;
         if (btnPay.exists() && btnPay.isDisplayed()) {
-            System.out.println("Нажимаем Secure Checkout");
+            System.out.println("Clicking Secure Checkout");
             checkoutButton = btnPay;
         } else {
-            System.out.println("Нажимаем Subscribe now (страница дилера)");
+            System.out.println("Clicking Subscribe now (dealer page)");
             checkoutButton = subscribeNow;
         }
         executeJavaScript("arguments[0].click()", checkoutButton);
         sleep(5000);
-        System.out.println("Кнопка оплаты нажата");
+        System.out.println("Payment button clicked");
         checkPrecheckModal();
     }
 
     /**
-     * Проверяет и обрабатывает модальное окно precheck если оно появилось.
+     * Checks and handles the precheck modal window if it appears.
      */
     private static void checkPrecheckModal() {
         sleep(3000);
@@ -124,7 +124,7 @@ public class YunoPaymentHandler {
     }
 
     /**
-     * Обрабатывает модальное окно precheck.
+     * Handles the precheck modal window.
      */
     private static void modalWindowIsDisplay() {
         if (modalWindow.getText().contains("You have already purchased Vehicle History Report")) {
@@ -139,72 +139,30 @@ public class YunoPaymentHandler {
     }
 
     /**
-     * Метод для обработки Yuno оплаты с 3DS аутентификацией.
-     *
-     * @param card Номер карты
-     * @param date Дата (MM/YY)
-     * @param cvc  CVC код
-     * @param zip  ZIP код (опционально)
-     */
-    public static void processYunoPaymentWith3Ds(String name, String card, String date, String cvc, String zip, String code) {
-        processYunoPayment(name, card, date, cvc, zip, true, code);
-    }
-
-    public static void processYunoPaymentWithFail3Ds(String name, String card, String date, String cvc, String zip) {
-        System.out.println("Начинаем обработку Yuno оплаты");
-        fillCardData(name, card, date, cvc, zip);
-        clickSecureCheckoutAndWait();
-
-        System.out.println("3ds is required");
-        fail3DsAuthentication();
-
-        System.out.println("Модальное окно Yuno 3Ds закрыто");
-    }
-
-    /**
-     * Фэйлит 3DS аутентификацию после нажатия Secure Checkout.
-     */
-    private static void fail3DsAuthentication() {
-        System.out.println("Обрабатываем 3DS аутентификацию");
-
-        System.out.println("Переключаемся на iframe 3DS");
-        switchTo().frame(iframeYuno3Ds);
-
-        System.out.println("Переключаемся на внутренний iframe 3DS");
-        switchTo().frame(iframeYuno3Ds1);
-
-        System.out.println("Нажимаем кнопку Cancel 3DS");
-        cancelYuno3Ds.shouldBe(enabled).click();
-
-        switchTo().defaultContent();
-
-    }
-
-    /**
-     * Обрабатывает 3DS аутентификацию после нажатия Secure Checkout.
+     * Handles 3DS authentication after clicking Secure Checkout.
      */
     private static void process3DsAuthentication(String code) {
-        System.out.println("Обрабатываем 3DS аутентификацию");
+        System.out.println("Processing 3DS authentication");
 
-        System.out.println("Переключаемся на iframe 3DS");
+        System.out.println("Switching to 3DS iframe");
         switchTo().frame(iframeYuno3Ds);
 
-        System.out.println("Переключаемся на внутренний iframe 3DS");
+        System.out.println("Switching to inner 3DS iframe");
         switchTo().frame(iframeYuno3Ds1);
 
         sleep(2000);
 
-        System.out.println("Вводим 3ds код");
+        System.out.println("Entering 3ds code");
         inputYuno3Ds.setValue(code).pressTab();
 
-        System.out.println("Нажимаем кнопку завершения 3DS");
+        System.out.println("Clicking 3DS complete button");
         completeYuno3Ds.shouldBe(enabled).click();
 
         check3DsErrors();
 
         switchTo().defaultContent();
 
-        System.out.println("3DS аутентификация завершена");
+        System.out.println("3DS authentication completed");
 
         sleep(3000);
     }
@@ -217,9 +175,9 @@ public class YunoPaymentHandler {
         if (frameText.contains("Whitelabel Error Page") ||
                 frameText.contains("Internal Server Error") ||
                 frameText.contains("status=500")) {
-            throw new TestAbortedException("Пропуск теста из-за ошибки Yuno 3DS: " + frameText);
+            throw new TestAbortedException("Skipping test due to Yuno 3DS error: " + frameText);
         }
 
-        System.out.println("Ошибки 3DS не найдены, продолжаем выполнение теста");
+        System.out.println("No 3DS errors found, continuing test execution");
     }
 }

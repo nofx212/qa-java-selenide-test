@@ -6,6 +6,5 @@ public class ClearTrialSubscriptions {
 
     public ClearTrialSubscriptions(String url) {
         Selenide.open(url);
-//        refresh();
     }
 }

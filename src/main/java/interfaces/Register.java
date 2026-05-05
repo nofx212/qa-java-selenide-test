@@ -9,6 +9,7 @@ import generators.EmailGenerator;
 import java.util.UUID;
 
 import static com.codeborne.selenide.Selenide.*;
+import static constants.Constants.TEST_EMAIL_BASE;
 
 public interface Register {
 
@@ -37,7 +38,8 @@ public interface Register {
 
     default String registration(String test) {
         setName(test);
-        var email = (String.format("test.autotest+%s@gmail.com", getUniqueId()));
+        String[] parts = TEST_EMAIL_BASE.split("@");
+        var email = String.format("%s+%s@%s", parts[0], getUniqueId(), parts[1]);
         setEmail(email);
         clickSignUpButton();
         return email;

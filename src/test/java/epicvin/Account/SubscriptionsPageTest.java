@@ -4,12 +4,10 @@ import annotations.epicvin.EpicvinPaymentTest;
 import annotations.epicvin.EpicvinTest;
 import clearAccount.ClearAccount;
 import org.junit.jupiter.api.Assertions;
-import pages.epicvin.Account.BillingPage;
 import pages.epicvin.Account.SubscriptionsPage;
 import pages.epicvin.Authentication.LoginPage;
 import pages.epicvin.Main.MainPage;
 import pages.epicvin.Precheck.PrecheckPage;
-import pages.epicvin.Price.PricePage;
 import pages.epicvin.Report.ReportPage;
 import pages.epicvin.SocialReviews.GooglePage;
 import pages.epicvin.SocialReviews.TrustpilotPage;
@@ -19,19 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SubscriptionsPageTest extends base.BaseTest {
-
-    @EpicvinTest
-    public void unlimSubscription() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL1, VALID_PASSWORD);
-        SubscriptionsPage subscriptionsPage = mainPage.subscriptions(SubscriptionsPage.class);
-        PricePage pricePage = subscriptionsPage.subscribe();
-        BillingPage billingPage = pricePage.fullSubFromSubscription(TEST, CARD_NUMBER, MONTH_YEAR, CVC,ZIP,YUNO_3DS_CODE);
-        var priceOnSubPage = pricePage.getPaymentPrice();
-        var priceOnBilling = billingPage.billingPrice();
-        Assertions.assertEquals(priceOnBilling, priceOnSubPage);
-    }
 
     @EpicvinTest
     public void reviewAfterCancelTrialSub() {

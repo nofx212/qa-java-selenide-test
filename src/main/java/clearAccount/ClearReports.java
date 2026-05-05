@@ -6,6 +6,5 @@ public class ClearReports {
 
     public ClearReports(String url) {
         Selenide.open(url);
-//        refresh();
     }
 }

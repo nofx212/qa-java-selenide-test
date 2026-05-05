@@ -19,7 +19,6 @@ public class DashboardPage implements Dispute {
     public static SelenideElement prepaid = $x("//div[@class='report-info']//span[2]");
     private final SelenideElement inputVin = $(By.id("vin-inputnot-found"));
     private final SelenideElement btnBuyMore = $(By.partialLinkText("Buy More"));
-    private final SelenideElement success = $x("//div[contains(@class,'alert-text')]");
     private final SelenideElement tooltip = $x("//button[@class='btn-reset']");
     private final SelenideElement tooltipText = $x("//p[contains(@class,'report-tooltip')]");
     private final SelenideElement tooltipLink = $x("//p[contains(@class,'report-tooltip')]//a");
@@ -42,10 +41,6 @@ public class DashboardPage implements Dispute {
     public PricePage clickBuyMore() {
         btnBuyMore.click();
         return new PricePage();
-    }
-
-    public String getSuccess() {
-        return success.getText();
     }
 
     public void openTooltip() {

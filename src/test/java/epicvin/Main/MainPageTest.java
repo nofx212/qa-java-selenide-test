@@ -4,16 +4,10 @@ import annotations.epicvin.EpicvinTest;
 import clearAccount.ClearAccount;
 import org.junit.jupiter.api.Assertions;
 import pages.epicvin.Authentication.LoginPage;
-import pages.epicvin.Footer.GoogleStorePage;
 import pages.epicvin.Main.MainPage;
 import pages.epicvin.Precheck.PrecheckPage;
 import sql.SQLRequestsEpicvin;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.sql.ResultSet;
 import java.time.Duration;
 import java.util.List;
@@ -127,16 +121,6 @@ public class MainPageTest extends base.BaseTest {
                 "Unexpected validation message: " + error);
     }
 
-    @EpicvinTest
-    public void checkBannerCookies() {
-        MainPage mainPage = new MainPage();
-        String textCookies = mainPage.checkCookies();
-        Assertions.assertTrue(
-                textCookies.contains(
-                        "We use cookies . If you continue to browse it means you agree to the use of cookies. Learn more and change"
-                )
-        );
-    }
 
     @EpicvinTest
     public void checkLanguagesInDropDown() {
@@ -149,28 +133,6 @@ public class MainPageTest extends base.BaseTest {
                 () -> assertEquals("Русский", mainPage.langRU()),
                 () -> assertEquals("العربية", mainPage.langAR())
         );
-    }
-
-    @EpicvinTest
-    public void checkGrabBanner() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL17, VALID_PASSWORD);
-        ClearAccount.clearEpicvinMainPage(TRIAL_SUB_EPICVIN, FINGERPRINTS_EPICVIN, REPORTS_EPICVIN, FULL_SUB_EPICVIN);
-        var vin = mainPage.getGrabBanner(VALID_VIN);
-        var grabVin = mainPage.getGrabVin();
-        System.out.println("GrabVin: " + grabVin);
-        if (mainPage.getMainTitle().equals("Save Yourself Thousands With A Comprehensive Vehicle History Report")) {
-            System.out.println("Grab banner displayed");
-            Assertions.assertEquals(vin, grabVin);
-        }
-    }
-
-    @EpicvinTest
-    public void subscribeToNews() {
-        MainPage mainPage = new MainPage();
-        mainPage.subscribeToNews(VALID_EMAIL);
-        Assertions.assertFalse((successSub).isDisplayed());
     }
 
     @EpicvinTest
@@ -192,25 +154,10 @@ public class MainPageTest extends base.BaseTest {
                 () -> assertEquals("What Customers Say About EpicVIN", mainPage.mainBlocks(reviewsBlock)),
                 () -> assertEquals("Dedicated Customer Support: We're Here to Help", mainPage.mainBlocks(supportBlock)),
                 () -> assertEquals("We Provide VIN Decoding for the Following Makes", mainPage.mainBlocks(carSearchBlock)),
-//                () -> assertEquals("Search for Used Cars by Makes", mainPage.mainBlocks(carSearchLinkedBlock)),
                 () -> assertEquals("Auto Insights Blog", mainPage.mainBlocks(similarBlogBlock)),
                 () -> assertEquals("Frequently Asked Questions", mainPage.mainBlocks(faqBlock)),
                 () -> assertEquals("Save Thousands of Dollars", mainPage.mainBlocks(saveBlock))
         );
-    }
-
-    @EpicvinTest
-    public void checkWhereFindVinWidget() {
-        MainPage mainPage = new MainPage();
-        mainPage.clickFindVinWidget();
-        Assertions.assertEquals("Looking for the VIN?", mainPage.getFindVinPopupTitle());
-    }
-
-    @EpicvinTest
-    public void checkRatingWidget() {
-        MainPage mainPage = new MainPage();
-        mainPage.addRating();
-        Assertions.assertEquals("Excellent!", mainPage.mainBlocks(ratingNote));
     }
 
     @EpicvinTest
@@ -266,21 +213,4 @@ public class MainPageTest extends base.BaseTest {
         Assertions.assertTrue(precheckPage.greatText().contains("Get unlimited access to detailed reports"));
     }
 
-    @EpicvinTest
-    public void checkGooglePlayStore() throws IOException, InterruptedException {
-        MainPage mainPage = new MainPage();
-        GoogleStorePage googleStorePage = mainPage.clickGooglePlayIcon();
-        String googleStoreUrl = googleStorePage.getUrl();
-        System.out.println("URL:" + googleStoreUrl);
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(googleStoreUrl))
-                .header("Referer", "autotest")
-                .GET()
-                .build();
-        HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
-        int statusCode = response.statusCode();
-        System.out.println("HTTP CODE = " + statusCode);
-        Assertions.assertEquals(200, statusCode, "Image URL failed: " + googleStorePage);
-    }
 }

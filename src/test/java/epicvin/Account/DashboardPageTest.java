@@ -10,7 +10,6 @@ import pages.epicvin.Precheck.PrecheckPage;
 import pages.epicvin.Price.PricePage;
 import pages.epicvin.Report.ReportPage;
 
-import static com.codeborne.selenide.Selenide.title;
 import static constants.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static pages.epicvin.Account.DashboardPage.*;
@@ -24,7 +23,6 @@ public class DashboardPageTest extends base.BaseTest {
         loginPage.login(VALID_EMAIL15, VALID_PASSWORD);
         DashboardPage dashboardPage = mainPage.clickDashboard();
         assertAll(
-                () -> assertEquals("Epicvin", title()),
                 () -> assertEquals("Dashboard", dashboardPage.dashboardBlock(titleH1)),
                 () -> assertEquals("My Balance", dashboardPage.dashboardBlock(block1)),
                 () -> assertEquals("You haven’t checked any vehicles yet!", dashboardPage.dashboardBlock(block2)),

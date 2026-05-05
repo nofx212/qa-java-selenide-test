@@ -27,7 +27,7 @@ jobs:
         run: mvn -B clean compile test-compile
 
       - name: Run tests
-        if: ${{ vars.RUN_TESTS == 'true' }}
+        if: ${{ github.event_name != 'pull_request' && vars.RUN_TESTS == 'true' }}
         env:
           BASE_URL_EPICVIN: ${{ secrets.BASE_URL_EPICVIN }}
           VALID_EMAIL: ${{ secrets.VALID_EMAIL }}
@@ -38,7 +38,7 @@ jobs:
         run: mvn -B test -Dheadless=true
 
       - name: Upload Allure results
-        if: ${{ always() && vars.RUN_TESTS == 'true' }}
+        if: ${{ always() && github.event_name != 'pull_request' && vars.RUN_TESTS == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: allure-results

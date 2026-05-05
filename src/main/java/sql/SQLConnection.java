@@ -18,7 +18,7 @@ public class SQLConnection {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(url, user, password);
             threadConnections.put(url, connection);
-            System.out.println("🌐 [" + Thread.currentThread().getName() + "] Connected to DB: " + url);
+            System.out.println("🌐 [" + Thread.currentThread().getName() + "] DB connection established");
         }
         return connection;
     }

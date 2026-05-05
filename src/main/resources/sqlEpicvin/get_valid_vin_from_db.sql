@@ -1,18 +1,6 @@
 select vin
 from tbl_cars
-where auction not in (
-  'manheim',
-  'manheim2',
-  'iaai',
-  'otomoto',
-  'autogielda',
-  'gratkapl',
-  'iaaica',
-  'sauto',
-  'cargurusuk',
-  'edgepipeline',
-  'ebay'
-)
+where auction not in (${EXCLUDED_AUCTIONS})
 and make in (
 'Audi',
 'BMW',

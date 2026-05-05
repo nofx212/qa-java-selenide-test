@@ -29,11 +29,6 @@ public class FullReportProcessorPage {
             case "fullReportByFunds":
                 return precheckPage.fullReportByFunds();
 
-//      No 3Ds and prepaid tests cards on Ixopay/Yuno
-//          case "card3Ds":
-//              return precheckPage.fullReportByCardWith3Ds(TEST,CARD_WITH_3Ds,MONTH_YEAR,CVC, ZIP);
-//          case "prepaidCard":
-//              return precheckPage.fullReportByCard(TEST,CARD_PREPAID, MONTH_YEAR, CVC, ZIP);
             default:
                 throw new IllegalArgumentException("Unsupported payment method: " + paymentMethod);
         }

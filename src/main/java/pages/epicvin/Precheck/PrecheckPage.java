@@ -27,13 +27,9 @@ public class PrecheckPage extends SampleVinPage implements Precheck, Dispute {
     private final SelenideElement textSorry = $x("//span[contains(text(),'So sorry!')]");
     private final SelenideElement btnPrepaidReport = $(By.id("use-prepaid"));
     public static SelenideElement modalTrialPeriodNotice = $x("//div[@class='modal-body']//h2");
-    private final SelenideElement insufficientError = $(By.id("pay-error-message"));
-    private final SelenideElement errorBlock = $(By.id("pay-fail"));
-    public static SelenideElement btnFundsInsufficient = $x("//button[@data-type='funds']");
     public static SelenideElement btnFundsActive = $x("//button[contains(@class,'prepaid-txt__use active')]");
     public static SelenideElement imgURL = $(By.id("img-sample"));
     public static SelenideElement inputEmail = $(By.id("email"));
-    private final SelenideElement salvageAlertBanner = $x("//div[@class='salvage-banner']//h3");
 
 
     public String greatText() {
@@ -129,110 +125,24 @@ public class PrecheckPage extends SampleVinPage implements Precheck, Dispute {
         }
     }
 
-    public ReportPage fullSubscription(String name, String card, String date, String cvc, String zip, String code) {
-        sleep(2000);
-        clickFullPack();
-        price = getPrecheckPrice();
-        checkbox(price);
-        processYunoPayment(name, card, date, cvc, zip, true, code);
-        return new ReportPage();
-    }
-
-    public ReportPage fullSubscriptionUnloggedUser(String name, String email, String card, String date, String cvc, String zip, String code) {
-        sleep(2000);
-        clickFullPack();
-        setEmail(email);
-        sleep(1000);
-        price = getPrecheckPrice();
-        checkbox(price);
-        processYunoPayment(name, card, date, cvc, zip, true, code);
-        return new ReportPage();
-    }
-
-    public ReportPage fullSubscriptionByFunds() {
-        sleep(2000);
-        clickFullPack();
-        price = getPrecheckPrice();
-        clickPrepaidFunds();
-        checkPrecheckModal();
-        return new ReportPage();
-    }
-
-    public ReportPage trialSubscriptionUnloggedUser(String name, String email, String card, String date, String cvc, String zip, String code) {
-        sleep(1000);
-        setEmail(email);
-        price = getPrecheckPrice();
-        checkbox(price);
-        processYunoPayment(name, card, date, cvc, zip, true, code);
-        return new ReportPage();
-    }
-
-    public ReportPage trialSubsUnloggedUserPaymentValidation(String name, String email, String card, String date, String cvc, String zip) {
-        sleep(1000);
-        setEmail(email);
-        price = getPrecheckPrice();
-        checkbox(price);
-        fillCardDataAndClickSecureCheckout(name, card, date, cvc, zip);
-        return new ReportPage();
-    }
-
     public ReportPage trialSubscription(String name, String card, String date, String cvc, String zip, String code) {
         sleep(1000);
         price = getPrecheckPrice();
         checkbox(price);
-        //        clickSecondAgreeCheckBoxUS(price);
         processYunoPayment(name, card, date, cvc, zip, true, code);
         return new ReportPage();
     }
 
-//    public ReportPage fullReportByCardWith3Ds(String name, String card, String date, String cvc, String zip) {
-//        clickFirstPack();
-//        checkbox(price);
-//        price = getPrecheckPrice();
-//        processIxopayPaymentWith3Ds(name, card, date, cvc, zip);
-//        return new ReportPage();
-//    }
-
-//    public ReportPage trialSubscriptionByCardWith3Ds(String name, String card, String date, String cvc, String zip) {
-//        price = getPrecheckPrice();
-//        checkbox(price);
-//        processIxopayPaymentWith3Ds(name, card, date, cvc, zip);
-//        return new ReportPage();
-//    }
-
-    public ReportPage trialSubscriptionByCardWithFail3Ds(String name, String card, String date, String cvc, String zip) {
-        price = getPrecheckPrice();
-        checkbox(price);
-        processYunoPaymentWithFail3Ds(name, card, date, cvc, zip);
-        return new ReportPage();
-    }
-
-    public ReportPage chooseTrialByPayPal(String email, String password) {
-        clickPayPal();
-        checkbox(price);
-        sleep(1000);
-        clickPayPalButton();
-        checkPrecheckModal();
-        processPayPalEpicvinPayment(email, password);
-        return new ReportPage();
-    }
-
-    public String getInsufficientError() {
-        errorBlock.shouldBe(visible);
-        System.out.println("Error block displayed");
-        return insufficientError.shouldBe(visible).getText();
-    }
-
     public boolean checkImageByContentType(SelenideElement imgElement) throws IOException {
-        // 1. Ждём, пока картинка загрузится и в src будет нужный домен
+        // 1. Wait until the image is loaded and src points to the expected domain
         imgElement.shouldBe(visible).shouldHave(attributeMatching("src",
                 "(https://photogenerate\\.vinchain\\.io/.*)|(https://epicvin\\.com/checkout/image-proxy.*)"));
 
-        // 2. Получаем URL картинки
+        // 2. Get the image URL
         String imageUrl = imgElement.getAttribute("src");
         System.out.println("IMG URL: " + imageUrl);
 
-        // 3. Проверяем по Content-Type, что это изображение
+        // 3. Verify by Content-Type that it is an image
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(imageUrl);
 
@@ -243,9 +153,5 @@ public class PrecheckPage extends SampleVinPage implements Precheck, Dispute {
                 return contentType != null && contentType.toLowerCase().startsWith("image/");
             });
         }
-    }
-
-    public String getSalvageAlertBanner() {
-        return salvageAlertBanner.getText();
     }
 }

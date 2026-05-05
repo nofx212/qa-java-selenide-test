@@ -14,11 +14,6 @@ public class ClearAccount {
         new MainPage();
     }
 
-    public static void clearTrialMainPage(String trial) {
-        new ClearTrialSubscriptions(trial);
-        new MainPage();
-    }
-
     public static void disputeMainPageEpicvin(String url) {
         new Dispute(url);
         new MainPage();

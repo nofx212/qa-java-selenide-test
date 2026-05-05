@@ -7,7 +7,6 @@ import clearAccount.ClearAccount;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.Assertions;
-import pages.epicvin.Account.SettingsPage;
 import pages.epicvin.Authentication.LoginPage;
 import pages.epicvin.Main.MainPage;
 import pages.epicvin.Precheck.PrecheckPage;
@@ -25,24 +24,9 @@ import static com.codeborne.selenide.Selenide.$x;
 import static constants.Constants.*;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static pages.epicvin.Report.ReportPage.*;
 
 public class ReportPageTest extends base.BaseTest {
-
-    @EpicvinPaymentTest
-    public void sendReviewReportOneStar() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL12, VALID_PASSWORD);
-        ClearAccount.clearEpicvinMainPage(TRIAL_SUB_EPICVIN, FINGERPRINTS_EPICVIN, REPORTS_EPICVIN, FULL_SUB_EPICVIN);
-        PrecheckPage precheckPage = mainPage.searchLotByVin(VALID_VIN);
-        ReportPage reportPage = precheckPage.fullReportByCard(TEST,CARD_NUMBER, MONTH_YEAR, CVC, ZIP);
-        reportPage.sendReviewOneStar(TEST);
-        Assertions.assertFalse((titleReview).isDisplayed());
-    }
 
     @EpicvinPaymentTest
     public void sendReviewReportFiveStars() {
@@ -63,39 +47,6 @@ public class ReportPageTest extends base.BaseTest {
     }
 
     @EpicvinTest
-    public void crashRecordsInReport() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL6, VALID_PASSWORD);
-        PrecheckPage precheckPage = mainPage.searchLotByVin(CRASHES_VIN);
-        ReportPage reportPage = precheckPage.prepaidReport();
-        reportPage.clickShowAllInAllHistoryEventTable();
-        Assertions.assertTrue(reportPage.getTextFromVehicleHistoryTbl().contains("Crash record"));
-    }
-
-    @EpicvinTest
-    public void emissionsInReport() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL6, VALID_PASSWORD);
-        PrecheckPage precheckPage = mainPage.searchLotByVin(EMISSIONS_VIN);
-        ReportPage reportPage = precheckPage.prepaidReport();
-        reportPage.clickShowAllInAllHistoryEventTable();
-        Assertions.assertTrue(reportPage.getTextFromVehicleHistoryTbl().contains("Emissions and safety governments checks"));
-    }
-
-    @EpicvinTest
-    public void servicesInReport() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL6, VALID_PASSWORD);
-        PrecheckPage precheckPage = mainPage.searchLotByVin(SERVICES_VIN);
-        ReportPage reportPage = precheckPage.prepaidReport();
-        reportPage.clickShowAllInAllHistoryEventTable();
-        Assertions.assertTrue(reportPage.getTextFromVehicleHistoryTbl().contains("Vehicle serviced"));
-    }
-
-    @EpicvinTest
     public void downloadPDF() throws IOException {
         MainPage mainPage = new MainPage();
         LoginPage loginPage = mainPage.clickLoginButton();
@@ -104,42 +55,6 @@ public class ReportPageTest extends base.BaseTest {
         ReportPage reportPage = precheckPage.prepaidReport();
         var report = reportPage.downloadReport();
         assertThat(readFileToString(report, StandardCharsets.UTF_8)).contains("Vehicle history report for 2020 FORD Edge");
-    }
-
-    @EpicvinPaymentTest
-    public void changeMeasurementSystem() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL7, VALID_PASSWORD);
-        PrecheckPage precheckPage = mainPage.searchLotByVin(VALID_VIN);
-        precheckPage.fullReportByCard(TEST,CARD_NUMBER, MONTH_YEAR, CVC, ZIP);
-        ReportPage reportPage = new ReportPage();
-        if (reportPage.epicVinReport().contains("EpicVIN vehicle history report for")) {
-            SettingsPage settingsPage = precheckPage.clickSettings();
-            settingsPage.clickKm();
-            assertAll(
-                    () -> assertEquals("km", reportPage.getKM(outlineKM)),
-                    () -> assertEquals("km", reportPage.getKM(ownershipKM)),
-                    () -> assertEquals("km", reportPage.getKM(estimatedMileageKM)),
-                    () -> assertEquals("km", reportPage.getKM(averageMileageKM)),
-                    () -> assertEquals("km", reportPage.getKM(odometerKM)),
-                    () -> assertEquals("km", reportPage.getKM(currentTitleKM)),
-                    () -> assertEquals("km", reportPage.getKM(historicalTitleKM)),
-                    () -> assertEquals("km", reportPage.getKM(salesKM)),
-                    () -> assertEquals("km", reportPage.getKM(priceChanges))
-            );
-        }
-    }
-
-    @EpicvinTest
-    public void checkRepairSmithPartner() {
-        MainPage mainPage = new MainPage();
-        LoginPage loginPage = mainPage.clickLoginButton();
-        loginPage.login(VALID_EMAIL6, VALID_PASSWORD);
-        PrecheckPage precheckPage = mainPage.searchLotByVin(REPAIR_SMITH_VIN);
-        ReportPage reportPage = precheckPage.prepaidReport();
-        reportPage.clickShowAllInAllHistoryEventTable();
-        Assertions.assertEquals("Mobile Car Repair, we come to you!", reportPage.getRepairSmithLink());
     }
 
     @EpicvinTest

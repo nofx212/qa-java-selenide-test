@@ -3,7 +3,6 @@ package interfaces;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
 public interface Precheck {
@@ -12,18 +11,13 @@ public interface Precheck {
     SelenideElement subscribeNow = $(By.id("subscribe-btn"));
     SelenideElement btnPayPal = $x("//div[contains(@id,'zoid-paypal-buttons')]");
     SelenideElement getFirstPack = $x("//div[@class='packets']//button[@data-id='1']");
-    SelenideElement getFullPackWithId102 = $x("//div[@class='packets']//button[@data-id='102']");
-    SelenideElement getFullPackWithId139 = $x("//div[@class='packets']//button[@data-id='139']");
-    SelenideElement stripeIframe = $x("//div[@id='card-element']//iframe");
     SelenideElement ixopayYunoIframe = $x("//div[@id='cc-number']//iframe");
     SelenideElement ixopayYunoCVCIframe = $x("//div[@id='cc-csc']//iframe");
     SelenideElement yunoDateIframe = $x("//div[@id='cc-exp-date']//iframe");
     SelenideElement cardholderName = $(By.id("cc-name"));
     SelenideElement inputCard = $x("//input[contains(@name,'number')]");
     SelenideElement inputMonthYear = $x("//input[contains(@name,'exp')]");
-    SelenideElement inputCVC = $(By.name("cvc"));
     SelenideElement inputYunoCVC = $(By.name("cvv"));
-    SelenideElement inputZIP = $(By.name("postalCode"));
     SelenideElement inputPostalCode = $(By.name("cc-zip"));
     SelenideElement getPayPal = $x("//button[contains(@class,'p-pp')]");
     SelenideElement getPayPalEmail = $(By.id("email"));
@@ -44,21 +38,10 @@ public interface Precheck {
     SelenideElement btnContinueToPay = $(By.id("continue-pay"));
     SelenideElement errorMessage = $x("//div[contains(@class,'text-legacy-title-medium')]");
     SelenideElement errorModalMessage = $x("//p[@class='message']");
-    SelenideElement iframe3Ds = $x("//iframe[contains(@name,'__privateStripeFrame')]");
     SelenideElement iframeYuno3Ds = $x("//iframe[@class='Yuno-iframe-challenge__iframe css-coxqpp']");
     SelenideElement iframeYuno3Ds1 = $x("//iframe[@id='threeDSCReqIframe']");
     SelenideElement inputYuno3Ds = $x("//input[@id='otp']");
-    SelenideElement iframeComplete3Ds = $x("//iframe[@id='challengeFrame']");
-    SelenideElement complete3Ds = $(By.id("test-source-authorize-3ds"));
     SelenideElement completeYuno3Ds = $x("//button[@id='sendOtp']");
-    SelenideElement cancelYuno3Ds = $x("//button[@id='cancel']");
-    SelenideElement fail3Ds = $(By.id("test-source-fail-3ds"));
-    SelenideElement errorCard = $(By.id("pay-error-message"));
-    SelenideElement errorZip = $(By.id("cc-zip-error"));
-    SelenideElement validationEmailError = $(By.id("emailError"));
-    SelenideElement validationCVVError = $x("//p[@id='cc-csc-error']");
-    SelenideElement validationDateError = $x("//p[@id='cc-exp-date-error']");
-    SelenideElement validationNameError = $x("//p[@id='cc-name-error']");
     SelenideElement precheckPriceCard = $x("//button[contains(@class,'cc-pay')]//span[@class='payment-btns__price']");
     SelenideElement clickAgree = $(By.name("agree"));
     SelenideElement clickFirstAgree = $(By.id("agreeFirst"));
@@ -69,11 +52,6 @@ public interface Precheck {
 
     default String precheckPageAll() {
         return pagePrecheck.getText();
-    }
-
-    default void clickSecureCheckout() {
-        executeJavaScript("arguments[0].click()", btnPay);
-        sleep(5000);
     }
 
     default void clickPayPalButton() {
@@ -91,71 +69,6 @@ public interface Precheck {
             System.out.println("Package on precheck is not selected");
             getFirstPack.click();
         }
-    }
-
-    default void clickFullPack() {
-        clickViewAllPackets();
-        if (getFullPackWithId102.exists()) {
-            System.out.println("Full subscription for 'Epicvin Inc' company with price 49.99$");
-            getFullPackWithId102.click();
-        } else {
-            System.out.println("Full subscription for 'INFOSPHERE W.L.L.' company with price 99.99$");
-            getFullPackWithId139.click();
-        }
-    }
-
-    default void switchToIframe() {
-        switchTo().frame(stripeIframe);
-        sleep(1000);
-    }
-
-    default void setCardNumber(String card) {
-        executeJavaScript(("arguments[0].scrollIntoView();"), inputCard);
-        sleep(1000);
-        inputCard.setValue(card);
-    }
-
-    default void setMonthYear(String date) {
-        sleep(1000);
-        inputMonthYear.setValue(date);
-    }
-
-    default void setCVC(String cvc) {
-        sleep(1000);
-        inputCVC.setValue(cvc);
-    }
-
-    default void setZIP(String zip) {
-        sleep(1000);
-        inputZIP.setValue(zip);
-    }
-
-    default void defaultIframe() {
-        switchTo().defaultContent();
-    }
-
-    default void switchTo3DsIframe() {
-        sleep(7000);
-        System.out.println("switchTo3DsIframe");
-        switchTo().frame(iframe3Ds);
-    }
-
-    default void switchToComplete3DsIframe() {
-        System.out.println("switchToComplete3DsIframe");
-        switchTo().frame(iframeComplete3Ds);
-    }
-
-    default void clickComplete3Ds() {
-        executeJavaScript("arguments[0].click()", complete3Ds);
-    }
-
-    default void clickFail3Ds() {
-        sleep(3000);
-        executeJavaScript("arguments[0].click()", fail3Ds);
-    }
-
-    default void clickAgreeCheckBox() {
-        executeJavaScript("arguments[0].click()", clickAgree);
     }
 
     default void checkbox(String price) {
@@ -320,44 +233,5 @@ public interface Precheck {
             System.out.println("Modal window is displayed");
             modalWindowIsDisplay();
         }
-    }
-
-    default String getErrorCard() {
-        errorCard.shouldBe(visible);
-        System.out.println("Error Card Text: " + errorCard.getText());
-        return errorCard.getText();
-    }
-
-    default String getErrorZip() {
-        errorZip.shouldBe(visible);
-        System.out.println("Error Zip Text: " + errorZip.getText());
-        return errorZip.getText();
-    }
-
-    default String getEmailValidation() {
-        validationEmailError.shouldBe(visible);
-        System.out.println("Error Email Validation Text: " + validationEmailError.getText());
-        return validationEmailError.getText();
-    }
-
-    default String getCVVValidation() {
-        if (validationCVVError.exists()) {
-            System.out.println("Error Email Validation Text: " + validationCVVError.getText());
-        }
-        return validationCVVError.getText();
-    }
-
-    default String getDateValidation() {
-        if (validationDateError.exists()) {
-            System.out.println("Error Email Validation Text: " + validationDateError.getText());
-        }
-        return validationDateError.getText();
-    }
-
-    default String getNameValidation() {
-        if (validationNameError.exists()) {
-            System.out.println("Error Name Validation Text: " + validationNameError.getText());
-        }
-        return validationNameError.getText();
     }
 }

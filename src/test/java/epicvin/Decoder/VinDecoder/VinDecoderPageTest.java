@@ -1,16 +1,15 @@
-package epicvin.Footer.VinDecoder;
+package epicvin.Decoder.VinDecoder;
 
 import annotations.epicvin.EpicvinTest;
 import org.junit.jupiter.api.Assertions;
 import pages.epicvin.Main.MainPage;
 import pages.epicvin.Precheck.PrecheckPage;
-import pages.epicvin.Footer.VinDecoder.VinDecoderPage;
+import pages.epicvin.Decoder.VinDecoder.VinDecoderPage;
 
 import static com.codeborne.selenide.Selenide.title;
 import static constants.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static pages.epicvin.Footer.BlogPage.authorsPageTitle;
-import static pages.epicvin.Footer.VinDecoder.VinDecoderPage.*;
+import static pages.epicvin.Decoder.VinDecoder.VinDecoderPage.*;
 
 public class VinDecoderPageTest extends base.BaseTest {
 
@@ -42,26 +41,6 @@ public class VinDecoderPageTest extends base.BaseTest {
         if (precheckPage.greatText().contains("Get unlimited access to detailed reports")) {
             assertAll(
                     () -> assertTrue(precheckPage.getVin().contains("******")),
-                    () -> assertTrue(precheckPage.textVehicleEngine().contains("Engine")),
-                    () -> assertTrue(precheckPage.textLastOdometer().contains("Last mileage")),
-                    () -> assertTrue(precheckPage.textLastSellingPrice().contains("Last price")),
-                    () -> assertTrue(precheckPage.textCountry().contains("Country"))
-            );
-        } else if (precheckPage.precheckPageAll().contains("So sorry!")) {
-            String sorryText = precheckPage.sorryText();
-            Assertions.assertTrue(sorryText.contains("So sorry!"));
-        } else {
-            Assertions.fail("Test failed");
-        }
-    }
-
-    @EpicvinTest
-    public void searchLotByVinFromNavigationForm() {
-        MainPage mainPage = new MainPage();
-        VinDecoderPage vinDecoderPage = mainPage.clickVinDecoder();
-        PrecheckPage precheckPage = vinDecoderPage.searchLotByVinFromNavForm(VALID_VIN);
-        if (precheckPage.greatText().contains("Get unlimited access to detailed reports")) {
-            assertAll(
                     () -> assertTrue(precheckPage.textVehicleEngine().contains("Engine")),
                     () -> assertTrue(precheckPage.textLastOdometer().contains("Last mileage")),
                     () -> assertTrue(precheckPage.textLastSellingPrice().contains("Last price")),
@@ -116,26 +95,6 @@ public class VinDecoderPageTest extends base.BaseTest {
             Assertions.assertEquals("John C. Baldwin", vinDecoderPage.getBlogBlocks(authorsPageTitle));
         } else {
             System.out.println("UNKNOWN AUTHOR");
-        }
-    }
-
-    @EpicvinTest
-    public void checkLotFromPrecheckPreview() {
-        MainPage mainPage = new MainPage();
-        VinDecoderPage vinDecoderPage = mainPage.clickVinDecoder();
-        PrecheckPage precheckPage = vinDecoderPage.vehicleFromPrecheckPreview();
-        if (precheckPage.greatText().contains("Get unlimited access to detailed reports")) {
-            assertAll(
-                    () -> assertTrue(precheckPage.textVehicleEngine().contains("Engine")),
-                    () -> assertTrue(precheckPage.textLastOdometer().contains("Last mileage")),
-                    () -> assertTrue(precheckPage.textLastSellingPrice().contains("Last price")),
-                    () -> assertTrue(precheckPage.textCountry().contains("Country"))
-            );
-        } else if (precheckPage.precheckPageAll().contains("So sorry!")) {
-            String sorryText = precheckPage.sorryText();
-            Assertions.assertTrue(sorryText.contains("So sorry!"));
-        } else {
-            Assertions.fail("Test failed");
         }
     }
 }

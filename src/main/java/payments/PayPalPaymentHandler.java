@@ -11,8 +11,8 @@ import static interfaces.Precheck.*;
 import static pages.epicvin.Precheck.PrecheckPage.modalTrialPeriodNotice;
 
 /**
- * Единый класс для обработки всех платежей через PayPal.
- * Обрабатывает логику с момента нажатия кнопки "Secure Checkout" до завершения оплаты.
+ * Unified handler for all PayPal payments.
+ * Covers the flow from clicking "Secure Checkout" to payment completion.
  */
 public class PayPalPaymentHandler {
 
@@ -20,18 +20,18 @@ public class PayPalPaymentHandler {
     private static final Duration LONG_TIMEOUT = Duration.ofSeconds(60);
 
     /**
-     * Основной метод для обработки PayPal оплаты после нажатия "Secure Checkout".
+     * Main method to process a PayPal payment after clicking "Secure Checkout".
      *
-     * @param email    Email для входа в PayPal
-     * @param password Пароль для входа в PayPal
+     * @param email    Email for PayPal login
+     * @param password Password for PayPal login
      */
     public static void processPayPalPayment(String email, String password) {
-        System.out.println("Начинаем обработку PayPal оплаты");
+        System.out.println("Starting PayPal payment processing");
 
         boolean modalAppeared = waitForPayPalForm();
 
         if (modalAppeared) {
-            System.out.println("Модальное окно появилось вместо формы PayPal, обработка PayPal не требуется");
+            System.out.println("Modal window appeared instead of PayPal form, PayPal handling is not required");
             return;
         }
 
@@ -45,15 +45,15 @@ public class PayPalPaymentHandler {
 
         checkPayPalErrors();
 
-        System.out.println("PayPal оплата успешно обработана");
+        System.out.println("PayPal payment processed successfully");
     }
 
     public static void processPayPalEpicvinPayment(String email, String password) {
-        System.out.println("Подготовка к обработке PayPal оплаты - открытие PayPal в новом окне");
+        System.out.println("Preparing PayPal payment - opening PayPal in a new window");
 
         switchTo().window(1);
 
-        System.out.println("Начинаем обработку PayPal оплаты");
+        System.out.println("Starting PayPal payment processing");
 
         enterPayPalEmail(email);
 
@@ -66,29 +66,29 @@ public class PayPalPaymentHandler {
         try {
             switchTo().window(0);
             switchTo().defaultContent();
-            System.out.println("Переключились на основное окно после PayPal оплаты");
+            System.out.println("Switched back to the main window after PayPal payment");
         } catch (Exception e) {
-            System.out.println("Не удалось переключиться на основное окно после PayPal оплаты: " + e.getMessage());
+            System.out.println("Failed to switch back to the main window after PayPal payment: " + e.getMessage());
         }
 
         checkPayPalErrors();
 
-        System.out.println("PayPal оплата успешно обработана");
+        System.out.println("PayPal payment processed successfully");
     }
 
     /**
-     * Ожидает появления формы PayPal после нажатия "Secure Checkout".
-     * Обрабатывает модальные окна если они появляются.
+     * Waits for the PayPal form to appear after clicking "Secure Checkout".
+     * Handles modal windows if they appear.
      *
-     * @return true если появилось модальное окно вместо формы PayPal, false если форма PayPal найдена
+     * @return true if a modal window appeared instead of the PayPal form, false if the PayPal form is found
      */
     private static boolean waitForPayPalForm() {
-        System.out.println("Ожидаем появления формы PayPal");
+        System.out.println("Waiting for the PayPal form to appear");
         sleep(7000);
 
         if (modalTrialPeriodNotice.exists() && modalTrialPeriodNotice.isDisplayed()) {
             String modalText = modalTrialPeriodNotice.getText();
-            System.out.println("Обнаружено модальное окно вместо формы PayPal: " + modalText);
+            System.out.println("Modal window detected instead of PayPal form: " + modalText);
             return true;
         }
         boolean formFound = false;
@@ -96,184 +96,184 @@ public class PayPalPaymentHandler {
         if (getPayPalEmail.exists()) {
             try {
                 getPayPalEmail.shouldBe(visible, DEFAULT_TIMEOUT);
-                System.out.println("Форма PayPal загружена (поле email найдено)");
+                System.out.println("PayPal form is loaded (email field found)");
                 formFound = true;
             } catch (Exception e) {
-                System.out.println("Поле email существует, но не видимо: " + e.getMessage());
+                System.out.println("Email field exists but is not visible: " + e.getMessage());
             }
         }
 
         if (!formFound && getPayPalPassword.exists()) {
             try {
                 getPayPalPassword.shouldBe(visible, DEFAULT_TIMEOUT);
-                System.out.println("Форма PayPal загружена (поле пароля найдено, email уже введен)");
+                System.out.println("PayPal form is loaded (password field found, email already entered)");
                 formFound = true;
             } catch (Exception e) {
-                System.out.println("Поле пароля существует, но не видимо: " + e.getMessage());
+                System.out.println("Password field exists but is not visible: " + e.getMessage());
             }
         }
 
         if (!formFound && btnPayNow.exists()) {
             try {
                 btnPayNow.shouldBe(visible, DEFAULT_TIMEOUT);
-                System.out.println("Форма PayPal загружена (кнопка оплаты найдена, пользователь уже авторизован)");
+                System.out.println("PayPal form is loaded (pay button found, user is already authorized)");
                 formFound = true;
             } catch (Exception e) {
-                System.out.println("Кнопка оплаты существует, но не видима: " + e.getMessage());
+                System.out.println("Pay button exists but is not visible: " + e.getMessage());
             }
         }
 
         if (!formFound) {
-            System.out.println("Не найдены элементы формы PayPal после ожидания");
+            System.out.println("PayPal form elements not found after waiting");
         }
 
         return false;
     }
 
     /**
-     * Вводит email в форму PayPal.
+     * Enters the email into the PayPal form.
      *
-     * @param email Email для входа
+     * @param email Email for login
      */
     private static void enterPayPalEmail(String email) {
-        System.out.println("Проверяем необходимость ввода email PayPal");
+        System.out.println("Checking whether the PayPal email needs to be entered");
         sleep(5000);
         if (getPayPalEmail.exists() && getPayPalEmail.isDisplayed()) {
-            System.out.println("Вводим email PayPal: " + email);
+            System.out.println("Entering PayPal email: " + email);
             getPayPalEmail.type(text(email).sensitive());
-            System.out.println("Email введен");
+            System.out.println("Email entered");
 
             if (btnNext.exists() && btnNext.isDisplayed()) {
                 btnNext.shouldBe(visible, DEFAULT_TIMEOUT).click();
-                System.out.println("Нажата кнопка Next");
+                System.out.println("Next button clicked");
                 sleep(2000);
             }
         } else {
-            System.out.println("Поле email не отображается, возможно пользователь уже залогинен или форма не загрузилась");
+            System.out.println("Email field is not displayed; user may already be logged in or the form has not loaded");
         }
     }
 
     /**
-     * Вводит пароль и выполняет вход в PayPal.
+     * Enters the password and signs in to PayPal.
      *
-     * @param password Пароль для входа
+     * @param password Password for login
      */
     private static void enterPayPalPassword(String password) {
-        System.out.println("Проверяем необходимость ввода пароля PayPal");
+        System.out.println("Checking whether the PayPal password needs to be entered");
 
         if (getPayPalPassword.exists() && getPayPalPassword.isDisplayed()) {
-            System.out.println("Вводим пароль PayPal");
+            System.out.println("Entering PayPal password");
             getPayPalPassword.type(text(password).sensitive());
-            System.out.println("Пароль введен");
+            System.out.println("Password entered");
 
             if (btnPayPalLogin.exists() && btnPayPalLogin.isDisplayed()) {
                 btnPayPalLogin.shouldBe(visible, DEFAULT_TIMEOUT).click();
-                System.out.println("Нажата кнопка входа в PayPal");
+                System.out.println("PayPal login button clicked");
                 sleep(3000);
             }
         } else {
-            System.out.println("Поле пароля не отображается, возможно пользователь уже залогинен");
+            System.out.println("Password field is not displayed; user may already be logged in");
         }
     }
 
     /**
-     * Проверяет наличие ошибок PayPal и выбрасывает исключение если они есть.
+     * Checks for PayPal errors and throws an exception if they are present.
      */
     private static void checkPayPalErrors() {
-        System.out.println("Проверяем наличие ошибок PayPal");
+        System.out.println("Checking for PayPal errors");
 
         if (errorMessage.exists() && errorMessage.isDisplayed()) {
             String errorText = errorMessage.getText();
-            System.out.println("Обнаружено сообщение PayPal: " + errorText);
+            System.out.println("PayPal message detected: " + errorText);
 
             if (errorText.contains("Something went wrong") || errorText.contains("We're sorry, but something went wrong")) {
-                throw new TestAbortedException("Пропуск теста из-за ошибки PayPal: " + errorText);
+                throw new TestAbortedException("Skipping test due to PayPal error: " + errorText);
             }
         }
         if (errorModalMessage.exists() && errorModalMessage.isDisplayed()) {
             String errorModalText = errorModalMessage.getText();
-            System.out.println("Обнаружено сообщение PayPal: " + errorModalText);
+            System.out.println("PayPal message detected: " + errorModalText);
 
             if (errorModalText.contains("Things don’t appear to be working at the moment.")) {
-                throw new TestAbortedException("Пропуск теста из-за ошибки PayPal: " + errorModalText);
+                throw new TestAbortedException("Skipping test due to PayPal error: " + errorModalText);
             }
         }
     }
 
     /**
-     * Завершает оплату через PayPal.
-     * Обрабатывает различные варианты кнопок и согласий.
+     * Completes the PayPal payment.
+     * Handles different button and consent variants.
      */
     private static void completePayPalPayment() {
-        System.out.println("Завершаем оплату через PayPal");
+        System.out.println("Completing the PayPal payment");
 
         try {
             sleep(3000);
-            // Сначала проверяем наличие кнопки "Continue" (может появиться после логина)
+            // First check for the "Continue" button (may appear after login)
             if (btnContinue.exists() && btnContinue.isDisplayed()) {
-                System.out.println("Найдена кнопка Continue, нажимаем");
+                System.out.println("Continue button found, clicking it");
                 btnContinue.shouldBe(visible, DEFAULT_TIMEOUT).click();
                 sleep(2000);
             }
 
-            // Проверяем наличие кнопки "Agree and Continue" (может быть старая или новая версия)
+            // Check for the "Agree and Continue" button (old or new version)
             if (btnAgreeContinue.exists() && btnAgreeContinue.isDisplayed()) {
-                System.out.println("Найдена кнопка Agree and Continue (старая версия)");
+                System.out.println("Agree and Continue button found (old version)");
                 executeJavaScript("arguments[0].click()", btnAgreeContinue);
-                System.out.println("Нажата кнопка Agree and Continue");
+                System.out.println("Agree and Continue button clicked");
                 sleep(2000);
             } else if (btnAgreeContinueNew.exists() && btnAgreeContinueNew.isDisplayed()) {
-                System.out.println("Найдена кнопка Agree and Continue (новая версия)");
+                System.out.println("Agree and Continue button found (new version)");
                 executeJavaScript("arguments[0].click()", btnAgreeContinueNew);
-                System.out.println("Нажата кнопка Agree and Continue (новая)");
+                System.out.println("Agree and Continue button clicked (new)");
                 sleep(2000);
             }
 
-            // Ожидаем появления финальной кнопки оплаты
+            // Wait for the final pay button to appear
             if (btnPayNow.exists()) {
                 btnPayNow.shouldBe(visible, LONG_TIMEOUT);
-                System.out.println("Найдена кнопка оплаты, нажимаем");
+                System.out.println("Pay button found, clicking it");
                 executeJavaScript("arguments[0].click()", btnPayNow);
-                System.out.println("Нажата кнопка оплаты PayPal");
+                System.out.println("PayPal pay button clicked");
                 waitForReturnToSite();
             } else {
-                System.out.println("Кнопка оплаты не найдена, возможно оплата уже завершена или произошла ошибка");
+                System.out.println("Pay button not found; payment may already be completed or an error occurred");
             }
 
         } catch (Exception e) {
-            System.out.println("Ошибка при завершении оплаты PayPal: " + e.getMessage());
+            System.out.println("Error while completing the PayPal payment: " + e.getMessage());
             e.printStackTrace();
-            // Если кнопка оплаты не найдена, возможно оплата уже завершена
-            // Продолжаем выполнение
+            // If the pay button is not found, the payment may already be completed
+            // Continue execution
         }
     }
 
     /**
-     * Ожидает возврата на сайт после завершения PayPal транзакции.
-     * Обрабатывает переключение окон/iframe если необходимо.
+     * Waits for the return to the site after the PayPal transaction is completed.
+     * Handles window/iframe switching if necessary.
      */
     private static void waitForReturnToSite() {
-        System.out.println("Ожидаем возврата на сайт после PayPal оплаты");
+        System.out.println("Waiting for return to the site after PayPal payment");
 
-        // Переключаемся на основное окно (на случай если PayPal открылся в новом окне)
+        // Switch to the main window (in case PayPal opened in a new window)
         try {
             switchTo().window(0);
-            System.out.println("Переключились на основное окно");
+            System.out.println("Switched to the main window");
         } catch (Exception e) {
-            System.out.println("Не удалось переключиться на основное окно: " + e.getMessage());
+            System.out.println("Failed to switch to the main window: " + e.getMessage());
         }
 
-        // Переключаемся на default content (на случай если PayPal был в iframe)
+        // Switch to default content (in case PayPal was inside an iframe)
         try {
             switchTo().defaultContent();
-            System.out.println("Переключились на default content");
+            System.out.println("Switched to default content");
         } catch (Exception e) {
-            System.out.println("Не удалось переключиться на default content: " + e.getMessage());
+            System.out.println("Failed to switch to default content: " + e.getMessage());
         }
 
-        // Ждем загрузки страницы сайта после возврата с PayPal
+        // Wait for the site page to load after returning from PayPal
         sleep(5000);
 
-        System.out.println("Возврат на сайт завершен");
+        System.out.println("Return to the site is complete");
     }
 }

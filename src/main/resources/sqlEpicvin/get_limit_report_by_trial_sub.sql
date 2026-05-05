@@ -7,10 +7,7 @@ select o.user_id, o.order_time, (
 from tbl_orders o
 where subscription_stage = -1
   and packet_id = 138
-  and o.user_id not in (199312, 1026972, 549477, 534936, 534937, 534938, 534939, 534941,
-                        721063, 734897, 534925, 534927, 534928, 534929, 534930, 534931,
-                        534932, 534933, 534934, 534923, 291319, 201110, 634425, 37981
-    )
+  and o.user_id not in (${TEST_USER_IDS})
   and not exists(
     select 1 from tbl_orders o1 where o.user_id=o1.user_id and o.packet_id=o1.packet_id and o1.order_time <  DATE_ADD(o.order_time, INTERVAL 3 DAY) limit 1
 )
